@@ -169,7 +169,7 @@ export const classes = [
   },
   {
     name: "ADS",
-    time: "9:00-10:00am",
+    time: "9:00am-10:00am",
     faculty: "AP",
     day: "Saturday",
   },

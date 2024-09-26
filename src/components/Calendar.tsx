@@ -73,7 +73,7 @@ const CalendarView = ({ classes, setSelected }: any) => {
       (selectedEvent) => selectedEvent.id === event.id
     )
       ? "#32CD32"
-      : "#2463EB"; // Change color if selected
+      : "#2463EB";
     return {
       style: {
         backgroundColor,
