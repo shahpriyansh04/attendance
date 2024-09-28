@@ -43,6 +43,7 @@ const Home = () => {
     };
 
     selected.map((item) => {
+      //@ts-ignore
       item.faculty = faculty[item.faculty];
     });
 
