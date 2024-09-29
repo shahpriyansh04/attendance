@@ -47,7 +47,7 @@ const CalendarView = ({ classes, setSelected }: any) => {
       title: classItem.name,
       start: startDate,
       end: endDate,
-      date: classDay.format("DD-MM-YYYY"), // Ensure date is included
+      date: classDay.format("ddd Do MMM YYYY"), // Ensure date is included
       ...classItem,
     };
   });
