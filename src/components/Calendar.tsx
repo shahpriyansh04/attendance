@@ -2,7 +2,7 @@
 import moment from "moment";
 import { useState } from "react";
 //@ts-ignore
-import { Calendar, momentLocalizer, Views } from "react-big-calendar";
+import { Calendar, momentLocalizer } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 
 const localizer = momentLocalizer(moment);
@@ -12,8 +12,17 @@ const CalendarView = ({ classes, setSelected }: any) => {
 
   const transformedClasses = classes.map((classItem: any) => {
     const [startTime, endTime] = classItem.time.split("-");
-    const startDate = moment()
-      .day(classItem.day)
+
+    const today = moment();
+    let classDay = moment().day(classItem.day); // classItem.day should be the weekday (0 = Sunday, 1 = Monday, etc.)
+
+    // If today is after the class day (e.g., today is Thursday and class is on Tuesday), schedule for next week
+    if (classDay.isBefore(today, "day")) {
+      classDay = classDay.add(1, "weeks");
+    }
+
+    // Start and end time for the class
+    const startDate = classDay
       .hour(
         (parseInt(startTime.split(":")[0]) % 12) +
           (startTime.includes("pm") ? 12 : 0)
@@ -22,8 +31,8 @@ const CalendarView = ({ classes, setSelected }: any) => {
       .second(0)
       .millisecond(0)
       .toDate();
-    const endDate = moment()
-      .day(classItem.day)
+
+    const endDate = classDay
       .hour(
         (parseInt(endTime.split(":")[0]) % 12) +
           (endTime.includes("pm") ? 12 : 0)
@@ -32,23 +41,16 @@ const CalendarView = ({ classes, setSelected }: any) => {
       .second(0)
       .millisecond(0)
       .toDate();
-    const date = moment()
-      .day(classItem.day)
-      .startOf("day")
-      .toDate()
-      .toDateString();
 
     return {
       id: classItem.id,
       title: classItem.name,
       start: startDate,
       end: endDate,
-      date: date,
-      ...classItem, // Include all other class properties
+      date: classDay.format("DD-MM-YYYY"), // Ensure date is included
+      ...classItem,
     };
   });
-
-  const views = ["week", "day"];
 
   const handleSelectEvent = (event: any) => {
     setSelectedClasses((prev) => {
@@ -56,16 +58,12 @@ const CalendarView = ({ classes, setSelected }: any) => {
         (selectedEvent) => selectedEvent.id === event.id
       );
       const newSelectedClasses = isSelected
-        ? prev.filter((selectedEvent) => selectedEvent.id !== event.id) // Remove if already selected
-        : [...prev, event]; // Add if not selected
+        ? prev.filter((selectedEvent) => selectedEvent.id !== event.id)
+        : [...prev, event];
 
-      setSelected(newSelectedClasses); // Update the parent state
+      setSelected(newSelectedClasses);
       return newSelectedClasses;
     });
-  };
-
-  const handleSelectSlot = ({ start, end }: { start: Date; end: Date }) => {
-    // Optionally, you could implement logic here to select classes based on the slot
   };
 
   const eventStyleGetter = (event: any) => {
@@ -110,11 +108,19 @@ const CalendarView = ({ classes, setSelected }: any) => {
     );
   };
 
+  const today = moment();
+  const isSunday = today.day() === 0;
+
+  const currentWeekStart = !isSunday
+    ? today.add(1, "day").startOf("week").add(1, "days").toDate() // Start from next Monday
+    : today.startOf("week").add(1, "days").toDate(); // Start from this Monday
+
   return (
     <Calendar
       localizer={localizer}
       events={transformedClasses}
       defaultView="week"
+      defaultDate={currentWeekStart}
       startAccessor="start"
       endAccessor="end"
       style={{ height: 600, width: "100%" }}
@@ -125,13 +131,9 @@ const CalendarView = ({ classes, setSelected }: any) => {
       max={new Date(0, 0, 0, 18, 0)}
       eventPropGetter={eventStyleGetter}
       components={{
-        toolbar: CustomToolbar, // Use the custom toolbar
-        event: (eventProps: any) => (
-          <div style={{}}>{eventProps.event.title}</div>
-        ),
+        toolbar: CustomToolbar,
       }}
       onSelectEvent={handleSelectEvent}
-      onSelectSlot={handleSelectSlot}
     />
   );
 };

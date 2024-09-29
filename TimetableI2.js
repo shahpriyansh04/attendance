@@ -1,4 +1,4 @@
-export const classes = [
+export const I2 = [
   {
     name: "CNS",
     time: "8:00am-9:00am",
@@ -84,9 +84,15 @@ export const classes = [
     day: "Tuesday",
   },
   {
+    name: "Minors",
+    time: "3:30pm-5:30pm",
+    faculty: "Other",
+    day: "Wednesday",
+  },
+  {
     name: "PBC Laboratory",
     time: "8:00am-10:00am",
-    faculty: "SR",
+    faculty: "API",
     day: "Thursday",
   },
   {
@@ -198,11 +204,21 @@ export const classes = [
     day: "Saturday",
   },
   {
+    name: "CG",
+    time: "2:30pm-3:30pm",
+    faculty: "NK",
+    day: "Saturday",
+  },
+  {
     name: "SA",
     time: "2:30pm-3:30pm",
     faculty: "PS",
     day: "Saturday",
   },
+  {
+    name: "Minors",
+    time: "3:30pm-5:30pm",
+    faculty: "Other",
+    day: "Saturday",
+  },
 ].map((classItem, index) => ({ ...classItem, id: index + 1 }));
-
-console.log(classes);

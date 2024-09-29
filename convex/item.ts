@@ -40,3 +40,16 @@ export const createItem = mutation({
         
      }
 })
+
+export const empty = mutation ({
+    args: {
+
+    },
+    async handler(ctx,args){
+        const data = await ctx.db.query("item").collect();
+        
+        for (const item of data) {
+            await ctx.db.delete(item._id);
+        }
+    }
+})

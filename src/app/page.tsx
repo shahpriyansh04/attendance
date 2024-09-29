@@ -3,19 +3,30 @@ import { useState } from "react";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { Button } from "@/components/ui/button";
 import CalendarView from "@/components/Calendar";
-import { classes } from "../../timetable.js";
+import { I2 } from "../../TimetableI2.js";
+import { I1 } from "../../TimetableI1.js";
+import { I3 } from "../../TimetableI3.js";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api.js";
 import { Toaster, toast } from "sonner";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const Home = () => {
-  const [name, setName] = useState("Priyansh");
-  const [sap, setSap] = useState("60003220151");
+  const [name, setName] = useState("");
+  const [sap, setSap] = useState("");
   const [selected, setSelected] = useState([]);
+  const [reason, setReason] = useState("");
+  const [division, setDivision] = useState("I2"); // Default value for division
+  console.log(division);
 
-  const [reason, setReason] = useState("membership drive");
   console.log(selected);
   const createClass = useMutation(api.item.createItem);
   const handleSubmit = async () => {
@@ -37,9 +48,13 @@ const Home = () => {
       SP: "Ms. Sharvari Patil",
       V: "Mr. Vishal Shah",
       KT: "Dr. Khushbu Trehaan",
-      SR: "Ms. Smita Rane",
       RP: "Mr. Ranjeet Puyed",
+      API: "Ms. Aprajita Philips",
+      SR: "Ms. Smita Rane",
+      VI: "Visiting faculty",
+
       B: "Ms. Bindi",
+      Other: "Other",
     };
 
     selected.map((item) => {
@@ -63,7 +78,7 @@ const Home = () => {
           name: name,
           sap: sap,
           reason: reason,
-          division: "division",
+          division: division,
         })
       )
     );
@@ -104,6 +119,26 @@ const Home = () => {
           />
         </div>
 
+        <div>
+          <Label>Division</Label>
+          <Select
+            value={division}
+            onValueChange={(value) => {
+              setSelected([]);
+              setDivision(value);
+            }}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Division" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="I1">I1</SelectItem>
+              <SelectItem value="I2">I2</SelectItem>
+              <SelectItem value="I3">I3</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
         <div className="">
           <Label>Reason</Label>
           <Input
@@ -114,7 +149,15 @@ const Home = () => {
           />
         </div>
       </div>
-      <CalendarView classes={classes} setSelected={setSelected} />
+      {division === "I1" && (
+        <CalendarView classes={I1} setSelected={setSelected} />
+      )}
+      {division === "I2" && (
+        <CalendarView classes={I2} setSelected={setSelected} />
+      )}
+      {division === "I3" && (
+        <CalendarView classes={I3} setSelected={setSelected} />
+      )}
 
       <Button
         className="bg-blue-500"
