@@ -14,15 +14,11 @@ const CalendarView = ({ classes, setSelected }: any) => {
     const [startTime, endTime] = classItem.time.split("-");
 
     const today = moment();
-    let classDay = moment().day(classItem.day); // classItem.day should be the weekday (0 = Sunday, 1 = Monday, etc.)
+    let nextWeekStart = today.clone().add(1, "week").startOf("week");
+    let classDay = nextWeekStart.clone().day(classItem.day);
 
-    // If today is after the class day (e.g., today is Thursday and class is on Tuesday), schedule for next week
-    if (classDay.isBefore(today, "day")) {
-      classDay = classDay.add(1, "weeks");
-    }
-
-    // Start and end time for the class
     const startDate = classDay
+      .clone()
       .hour(
         (parseInt(startTime.split(":")[0]) % 12) +
           (startTime.includes("pm") ? 12 : 0)
@@ -33,6 +29,7 @@ const CalendarView = ({ classes, setSelected }: any) => {
       .toDate();
 
     const endDate = classDay
+      .clone()
       .hour(
         (parseInt(endTime.split(":")[0]) % 12) +
           (endTime.includes("pm") ? 12 : 0)
@@ -47,7 +44,7 @@ const CalendarView = ({ classes, setSelected }: any) => {
       title: classItem.name,
       start: startDate,
       end: endDate,
-      date: classDay.format("ddd Do MMM YYYY"), // Ensure date is included
+      date: classDay.format("ddd Do MMM YYYY"),
       ...classItem,
     };
   });
@@ -108,19 +105,14 @@ const CalendarView = ({ classes, setSelected }: any) => {
     );
   };
 
-  const today = moment();
-  const isSunday = today.day() === 0;
-
-  const currentWeekStart = !isSunday
-    ? today.add(1, "day").startOf("week").add(1, "days").toDate() // Start from next Monday
-    : today.startOf("week").add(1, "days").toDate(); // Start from this Monday
+  const nextWeekStart = moment().add(1, "week").startOf("week").toDate();
 
   return (
     <Calendar
       localizer={localizer}
       events={transformedClasses}
       defaultView="week"
-      defaultDate={currentWeekStart}
+      defaultDate={nextWeekStart}
       startAccessor="start"
       endAccessor="end"
       style={{ height: 600, width: "100%" }}
