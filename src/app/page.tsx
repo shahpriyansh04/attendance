@@ -162,7 +162,13 @@ const Home = () => {
       <Button
         className="bg-blue-500"
         onClick={() => {
-          handleSubmit();
+          if (
+            name.length > 0 &&
+            sap.length > 0 &&
+            selected.length > 0 &&
+            reason.length > 0
+          )
+            handleSubmit();
         }}
       >
         Add to attendance
