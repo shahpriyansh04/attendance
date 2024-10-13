@@ -14,8 +14,8 @@ const CalendarView = ({ classes, setSelected }: any) => {
     const [startTime, endTime] = classItem.time.split("-");
 
     const today = moment();
-    let nextWeekStart = today.clone().add(1, "week").startOf("week");
-    let classDay = nextWeekStart.clone().day(classItem.day);
+    let currentWeekStart = today.clone().startOf("week");
+    let classDay = currentWeekStart.clone().day(classItem.day);
 
     const startDate = classDay
       .clone()
@@ -105,14 +105,14 @@ const CalendarView = ({ classes, setSelected }: any) => {
     );
   };
 
-  const nextWeekStart = moment().add(1, "week").startOf("week").toDate();
+  const currentWeekStart = moment().startOf("week").toDate();
 
   return (
     <Calendar
       localizer={localizer}
       events={transformedClasses}
       defaultView="week"
-      defaultDate={nextWeekStart}
+      defaultDate={currentWeekStart}
       startAccessor="start"
       endAccessor="end"
       style={{ height: 600, width: "100%" }}
