@@ -1,6 +1,6 @@
 "use client";
 import moment from "moment";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 //@ts-ignore
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
@@ -10,44 +10,56 @@ const localizer = momentLocalizer(moment);
 const CalendarView = ({ classes, setSelected }: any) => {
   const [selectedClasses, setSelectedClasses] = useState<any[]>([]);
 
-  const transformedClasses = classes.map((classItem: any) => {
-    const [startTime, endTime] = classItem.time.split("-");
-
+  const transformedClasses = useMemo(() => {
     const today = moment();
-    let currentWeekStart = today.clone().startOf("week");
-    let classDay = currentWeekStart.clone().day(classItem.day);
+    const startOfYear = today.clone().startOf("year");
+    const endOfYear = today.clone().endOf("year");
 
-    const startDate = classDay
-      .clone()
-      .hour(
-        (parseInt(startTime.split(":")[0]) % 12) +
-          (startTime.includes("pm") ? 12 : 0)
-      )
-      .minute(parseInt(startTime.split(":")[1].slice(0, -2)))
-      .second(0)
-      .millisecond(0)
-      .toDate();
+    return classes.flatMap((classItem: any) => {
+      const [startTime, endTime] = classItem.time.split("-");
+      const dayOfWeek = classItem.day;
 
-    const endDate = classDay
-      .clone()
-      .hour(
-        (parseInt(endTime.split(":")[0]) % 12) +
-          (endTime.includes("pm") ? 12 : 0)
-      )
-      .minute(parseInt(endTime.split(":")[1].slice(0, -2)))
-      .second(0)
-      .millisecond(0)
-      .toDate();
+      let currentDate = startOfYear.clone().day(dayOfWeek);
+      const events = [];
 
-    return {
-      id: classItem.id,
-      title: classItem.name,
-      start: startDate,
-      end: endDate,
-      date: classDay.format("ddd Do MMM YYYY"),
-      ...classItem,
-    };
-  });
+      while (currentDate.isSameOrBefore(endOfYear)) {
+        const startDate = currentDate
+          .clone()
+          .hour(
+            (parseInt(startTime.split(":")[0]) % 12) +
+              (startTime.includes("pm") ? 12 : 0)
+          )
+          .minute(parseInt(startTime.split(":")[1].slice(0, -2)))
+          .second(0)
+          .millisecond(0)
+          .toDate();
+
+        const endDate = currentDate
+          .clone()
+          .hour(
+            (parseInt(endTime.split(":")[0]) % 12) +
+              (endTime.includes("pm") ? 12 : 0)
+          )
+          .minute(parseInt(endTime.split(":")[1].slice(0, -2)))
+          .second(0)
+          .millisecond(0)
+          .toDate();
+
+        events.push({
+          id: `${classItem.id}-${currentDate.format("YYYY-MM-DD")}`,
+          title: classItem.name,
+          start: startDate,
+          end: endDate,
+          date: currentDate.format("ddd Do MMM YYYY"),
+          ...classItem,
+        });
+
+        currentDate.add(1, "week");
+      }
+
+      return events;
+    });
+  }, [classes]);
 
   const handleSelectEvent = (event: any) => {
     setSelectedClasses((prev) => {
@@ -105,14 +117,27 @@ const CalendarView = ({ classes, setSelected }: any) => {
     );
   };
 
-  const currentWeekStart = moment().startOf("week").toDate();
+  const getDefaultDate = () => {
+    const today = moment();
+    const dayOfWeek = today.day();
+
+    // If it's Saturday (6) or after, show next week
+    if (dayOfWeek >= 6) {
+      return today.add(1, "week").startOf("week").toDate();
+    }
+
+    // Otherwise, show current week
+    return today.startOf("week").toDate();
+  };
+
+  const defaultDate = useMemo(() => getDefaultDate(), []);
 
   return (
     <Calendar
       localizer={localizer}
       events={transformedClasses}
       defaultView="week"
-      defaultDate={currentWeekStart}
+      defaultDate={defaultDate}
       startAccessor="start"
       endAccessor="end"
       style={{ height: 600, width: "100%" }}
