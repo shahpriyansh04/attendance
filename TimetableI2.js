@@ -236,7 +236,7 @@ export const I2 = [
   },
   {
     name: "Honors Laboratory",
-    time: "3:30pm-5:30pm",
+    time: "2:30pm-4:30pm",
     faculty: "AJ",
     day: "Saturday",
   },
