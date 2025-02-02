@@ -52,7 +52,12 @@ const Home = () => {
       API: "Ms. Aprajita Philips",
       SR: "Ms. Smita Rane",
       VI: "Visiting faculty",
-
+      SV: "Dr. Satish Verma",
+      MS: "Ms. Monali Sankhe",
+      PG: "Ms. Priyanca Gonsalves",
+      PH: "Mr. Pravin Hole",
+      LS: "Ms. Leena Sahu",
+      CB: "Mr. Chandrashekhar Badjugar",
       B: "Ms. Bindi",
       Other: "Other",
     };
