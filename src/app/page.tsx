@@ -25,6 +25,7 @@ const Home = () => {
   const [selected, setSelected] = useState([]);
   const [reason, setReason] = useState("");
   const [division, setDivision] = useState("I2"); // Default value for division
+  const [roll, setRoll] = useState("I118");
   console.log(division);
 
   console.log(selected);
@@ -84,6 +85,7 @@ const Home = () => {
           sap: sap,
           reason: reason,
           division: division,
+          roll: roll,
         })
       )
     );
@@ -143,7 +145,15 @@ const Home = () => {
             </SelectContent>
           </Select>
         </div>
-
+        <div className="">
+          <Label>Roll No</Label>
+          <Input
+            placeholder="ROll"
+            type="text"
+            value={roll}
+            onChange={(e) => setRoll(e.target.value)}
+          />
+        </div>
         <div className="">
           <Label>Reason</Label>
           <Input
